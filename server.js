@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path')
 const app = express();
-const PORT = 3001;
+const PORT = 3005;
 const fs = require('fs');
 
 
@@ -19,7 +19,7 @@ app.use(express.json())
 
 app.get('/',(req,res)=>{
     res.json('Connected')
-    console.log('Get request received')
+    // res.sendFile(path.join(__dirname,'public/index.html'))
 })
 
 app.get('/notes',(req,res)=>{
@@ -31,15 +31,28 @@ app.get('/api/notes',(req,res)=>{
 })
 
 app.post('/api/notes',(req,res)=>{
-    req.body.id=noteCount.id
-    noteCount.id++
-    notesArray.push(req.body)
-    fs.writeFileSync('./db/id.json',JSON.stringify(noteCount),err=>{
-        err?console.log(err):console.log('Updated database')
-    })
-    fs.writeFileSync('./db/db.json',JSON.stringify(notesArray),err=>{
-        err?console.log(err):console.log('Updated database')
-    })
+    const { title,text } = req.body
+    if (title&&text){
+        const newNote = {
+            title,
+            text,
+            id:noteCount.id
+        }
+        noteCount.id++
+        notesArray.push(newNote)
+        fs.writeFileSync('./db/id.json',JSON.stringify(noteCount),err=>{
+            err?console.log(err):console.log('Updated database')
+        })
+        fs.writeFileSync('./db/db.json',JSON.stringify(notesArray,null,2),err=>{
+            err?console.log(err):console.log('Updated database')
+        })
+        const response = {
+            status: 'success',
+            body: newNote,
+          };
+      
+          res.json(response);
+    }
 })
 
 app.delete(`/api/notes/:toDelete`,(req,res)=>{
@@ -47,8 +60,26 @@ app.delete(`/api/notes/:toDelete`,(req,res)=>{
     fs.writeFileSync('./db/db.json',JSON.stringify(notesArray),err=>{
         err?console.log(err):console.log('Updated database')
     })
+    const response = {
+        status: 'success',
+        body: 'Deleted',
+      };
+  
+      res.json(response);
 })
 
 app.listen(PORT,()=>{
     console.log(`Listening on Port ${PORT}`)
 })
+
+// const readAndAppend = (content, file) => {
+//     fs.readFile(file, 'utf8', (err, data) => {
+//       if (err) {
+//         console.error(err);
+//       } else {
+//         const parsedData = JSON.parse(data);
+//         parsedData.push(content);
+//         writeToFile(file, parsedData);
+//       }
+//     });
+//   };
