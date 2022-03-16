@@ -30,7 +30,7 @@ app.post('/notes',(req,res)=>{
         addNote('./db/db.json',newNote)
         const response = {
             status: 'success',
-            body: `Added ${newNote.title}`,
+            body: newNote,
           };
       
           res.json(response);

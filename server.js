@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const routes = require('./routes/index');
+const path = require('path');
 
 const PORT = process.env.PORT || 3005;
 
@@ -19,8 +20,8 @@ app.use((req,res,next)=>{
 app.use(routes)
 
 // Default path required in server.js for heroku
-app.get('/',(req,res)=>{
-    res.sendFile(path.join(__dirname,'../../public/index.html'))
+app.get('*',(req,res)=>{
+    res.sendFile(path.join(__dirname,'public/index.html'))
 })
 
 
