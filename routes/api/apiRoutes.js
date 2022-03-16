@@ -2,41 +2,32 @@ const express = require('express');
 const path = require('path')
 const app = express();
 const fs = require('fs');
-const {readAndAppend,readFromFile, writeToFile,readAndDelete} = require('../../helpers/fsUtil');
-const uuid = require('../../helpers/uuid');
+const {deleteNote,addNote} = require('../../helpers/fsUtil');
+const uuid = require('../../helpers/id');
+
+
 // Endpoint: /api
-
-// const data = fs.readFileSync('../../db/db.json','utf8')
-// const ID = fs.readFileSync('../../db/id.json','utf8')
-
-
-// let notesArray=JSON.parse(data)
-// let noteCount=JSON.parse(ID)
 
 app.get('/notes',(req,res)=>{
     console.info(`${req.method} request received for feedback`);
-    readFromFile('./db/db.json').then(data=>res.json(JSON.parse(data)))
+    fs.readFile('./db/db.json','utf-8',(err,data)=>{
+        err?console.log(err):res.json(JSON.parse(data))
+    })
 })
 
 app.post('/notes',(req,res)=>{
     const { title,text } = req.body
     if (title&&text){
+        console.log(uuid())
         const newNote = {
             title,
             text,
             id:uuid()
         }
-        readAndAppend('./db/db.json',newNote)
-        // notesArray.push(newNote)
-        // fs.writeFileSync('./db/id.json',JSON.stringify(noteCount),err=>{
-        //     err?console.log(err):console.log('Updated database')
-        // })
-        // fs.writeFileSync('./db/db.json',JSON.stringify(notesArray,null,2),err=>{
-        //     err?console.log(err):console.log('Updated database')
-        // })
+        addNote('./db/db.json',newNote)
         const response = {
             status: 'success',
-            body: newNote,
+            body: `Added ${newNote}`,
           };
       
           res.json(response);
@@ -44,12 +35,11 @@ app.post('/notes',(req,res)=>{
 })
 
 app.delete(`/notes/:toDelete`,(req,res)=>{
-    
     // notesArray = notesArray.filter(data=>data.id!==parseInt(req.params.toDelete))
-    readAndDelete('./db/db.json',req.params.toDelete)
+    deleteNote('./db/db.json',parseInt(req.params.toDelete))
     const response = {
         status: 'success',
-        body: 'Deleted',
+        body: 'Deleted Note',
       };
   
       res.json(response);

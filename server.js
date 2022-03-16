@@ -1,7 +1,7 @@
 const express = require('express');
 // const path = require('path')
 const app = express();
-const PORT = 3005;
+const PORT = process.env.PORT || 3005;
 // const fs = require('fs');
 const routes = require('./routes/index');
 
@@ -13,6 +13,12 @@ app.use(express.static('public'));
 app.use((req,res,next)=>{
     console.log(req.path,'path');
     next()
+})
+
+
+app.get('/',(req,res)=>{
+    // res.json('Connected')
+    res.sendFile(path.join(__dirname,'../../public/index.html'))
 })
 app.use(routes)
 
