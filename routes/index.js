@@ -5,7 +5,7 @@ const htmlRoutes = require('./html/htmlRoutes');
 
 // Endpoint: /
 app.use('/api',apiRoutes)
-app.use('/',htmlRoutes)
+app.use('/notes',htmlRoutes)
 
 
 module.exports = app;

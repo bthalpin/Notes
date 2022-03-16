@@ -8,6 +8,8 @@ const uuid = require('../../helpers/id');
 
 // Endpoint: /api
 
+
+// Reads the notes from the db.json file and sends the information to the client side
 app.get('/notes',(req,res)=>{
     console.info(`${req.method} request received for feedback`);
     fs.readFile('./db/db.json','utf-8',(err,data)=>{
@@ -15,10 +17,11 @@ app.get('/notes',(req,res)=>{
     })
 })
 
+
+// Adds a random id to the note created and appends it to the list of notes in db.json
 app.post('/notes',(req,res)=>{
     const { title,text } = req.body
     if (title&&text){
-        console.log(uuid())
         const newNote = {
             title,
             text,
@@ -27,21 +30,22 @@ app.post('/notes',(req,res)=>{
         addNote('./db/db.json',newNote)
         const response = {
             status: 'success',
-            body: `Added ${newNote}`,
+            body: `Added ${newNote.title}`,
           };
       
           res.json(response);
     }
 })
 
+
+// Checks for a note with the corresponding id and deletes it from db.json
 app.delete(`/notes/:toDelete`,(req,res)=>{
-    // notesArray = notesArray.filter(data=>data.id!==parseInt(req.params.toDelete))
     deleteNote('./db/db.json',parseInt(req.params.toDelete))
     const response = {
         status: 'success',
         body: 'Deleted Note',
       };
-  
+      console.info('Note deleted');
       res.json(response);
 })
 
